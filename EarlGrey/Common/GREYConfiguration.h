@@ -44,7 +44,9 @@ GREY_EXTERN NSString *const kGREYConfigKeyActionConstraintsEnabled;
 
 /**
  *  Configuration that holds timeout duration (in seconds) for actions and assertions. Actions or
- *  assertions that are not scheduled within this time will fail with a timeout.
+ *  assertions that are not scheduled within this time will fail with a timeout. If the action or
+ *  assertion starts within the timeout duration and if a search action is provided, then the search
+ *  action will execute at least once regardless of the timeout duration.
  *
  *  Accepted values: @c double (negative values are invalid)
  *  Default value: 30.0
@@ -138,15 +140,6 @@ GREY_EXTERN NSString *const kGREYConfigKeyURLBlacklistRegex;
  *  Default value: NO
  */
 GREY_EXTERN NSString *const kGREYConfigKeyIncludeStatusBarWindow;
-
-/**
- *  Configuration for setting the default screenshot location. The value must be absolute path
- *  pointing to a directory where screenshots will be saved.
- *
- *  Accepted values: NSString containing valid absolute filepath writable by the test.
- *  Default value: Documents directory of the app under test
- */
-GREY_EXTERN NSString *const kGREYConfigKeyScreenshotDirLocation;
 
 /**
  *  Configuration for setting a directory location where any test artifacts such as screenshots,

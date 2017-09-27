@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-#  Copyright 2016 Google Inc.
+#  Copyright 2017 Google Inc.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -378,7 +378,15 @@ module EarlGrey
       src_swift_name = 'EarlGrey.swift'
       src_swift = File.join(src_root, "Swift-#{swift_version}", src_swift_name)
 
-      raise 'Bundled swift missing' unless File.exist? src_swift
+      unless File.exist? src_swift
+        puts_magenta "EarlGrey.swift for version #{swift_version} not found. " \
+                     'Falling back to version 3.0.'
+        swift_fallback = 'Swift-3.0'
+        src_swift = File.join(src_root, swift_fallback, src_swift_name)
+        unless File.exist?(src_swift)
+          raise "Unable to locate #{swift_fallback} file at path #{src_swift}."
+        end
+      end
       dst_swift = File.join(dst_root, src_swift_name)
 
       FileUtils.copy src_swift, dst_swift

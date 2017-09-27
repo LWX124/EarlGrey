@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Google Inc.
+// Copyright 2017 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,17 +14,11 @@
 // limitations under the License.
 //
 
-#import "Common/GREYWeakObjectContainer.h"
+#import <UIKit/UIKit.h>
 
-@implementation GREYWeakObjectContainer
+@interface FTRLayoutViewController : UIViewController
 
-- (instancetype)initWithObject:(id)object {
-  self = [super init];
-  if (self) {
-    _object = object;
-  }
-  return self;
-}
+@property(nonatomic, strong) IBOutlet UITextField *topTextbox;
+@property(nonatomic, strong) IBOutlet UIButton *button;
 
 @end
-

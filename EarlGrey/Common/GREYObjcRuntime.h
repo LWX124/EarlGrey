@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Google Inc.
+// Copyright 2017 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,24 +17,19 @@
 #import <Foundation/Foundation.h>
 
 /**
- *  Class used to weakly hold an object so that the object can safely be dereferenced even it has
- *  been deallocated.
+ *  A utility class used for common runtime related operations.
  */
-@interface GREYWeakObjectContainer : NSObject
+@interface GREYObjcRuntime : NSObject
 
 /**
- *  Initialize the container with @c object.
+ *  Adds the given method from the given class into the destination class.
  *
- *  @param object The object to be weakly held by the container.
+ *  @param destination The destination class.
+ *  @param selector    The method selector from source class that needs to be added to destination.
+ *  @param source      The source class for the method to be added.
  */
-- (instancetype)initWithObject:(id)object;
-
-- (instancetype)init NS_UNAVAILABLE;
-
-/**
- *  The weakly held object. Getting the object will return nil if the object has been deallocated.
- */
-@property(nonatomic, readonly, weak) id object;
++ (void)addInstanceMethodToClass:(Class)destination
+                    withSelector:(SEL)selector
+                       fromClass:(Class)source;
 
 @end
-

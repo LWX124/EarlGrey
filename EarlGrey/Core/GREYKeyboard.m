@@ -29,6 +29,7 @@
 #import "Common/GREYLogger.h"
 #import "Core/GREYInteraction.h"
 #import "Synchronization/GREYAppStateTracker.h"
+#import "Synchronization/GREYAppStateTrackerObject.h"
 #import "Synchronization/GREYCondition.h"
 #import "Synchronization/GREYUIThreadExecutor.h"
 
@@ -94,39 +95,51 @@ static NSString *const kReturnKeyIdentifier = @"\n";
                                            object:nil
                                             queue:nil
                                        usingBlock:^(NSNotification *note) {
-      NSString *elementID = TRACK_STATE_FOR_ELEMENT(kGREYPendingKeyboardTransition, keyboardObject);
+      GREYAppStateTrackerObject *object =
+          TRACK_STATE_FOR_OBJECT(kGREYPendingKeyboardTransition, keyboardObject);
       objc_setAssociatedObject(keyboardObject,
                                @selector(grey_keyboardObject),
-                               elementID,
+                               object,
                                OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }];
     [defaultNotificationCenter addObserverForName:UIKeyboardDidShowNotification
                                            object:nil
                                             queue:nil
                                        usingBlock:^(NSNotification *note) {
-      NSString *elementID = objc_getAssociatedObject(keyboardObject,
-                                                     @selector(grey_keyboardObject));
-      UNTRACK_STATE_FOR_ELEMENT_WITH_ID(kGREYPendingKeyboardTransition, elementID);
-      atomic_store(&gIsKeyboardShown, true);
+      GREYAppStateTrackerObject *object =
+          objc_getAssociatedObject(keyboardObject, @selector(grey_keyboardObject));
+      UNTRACK_STATE_FOR_OBJECT(kGREYPendingKeyboardTransition, object);
+      // There may be a zero size inputAccessoryView to track keyboard data.
+      // This causes UIKeyboardDidShowNotification event to fire even though no keyboard is visible.
+      // So intead of relying on keyboard show/hide event to detect the keyboard visibility, it is
+      // necessary to double check on the actual frame to determine the true visibility.
+      CGRect keyboardFrame = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+      UIWindow *window = [UIApplication sharedApplication].keyWindow;
+      keyboardFrame = [window convertRect:keyboardFrame fromWindow:nil];
+      CGRect windowFrame = window.frame;
+      CGRect frameIntersection = CGRectIntersection(windowFrame, keyboardFrame);
+      bool keyboardVisible = frameIntersection.size.width > 1 && frameIntersection.size.height > 1;
+      atomic_store(&gIsKeyboardShown, keyboardVisible);
     }];
     [defaultNotificationCenter addObserverForName:UIKeyboardWillHideNotification
                                            object:nil
                                             queue:nil
                                        usingBlock:^(NSNotification *note) {
       atomic_store(&gIsKeyboardShown, false);
-      NSString *elementID = TRACK_STATE_FOR_ELEMENT(kGREYPendingKeyboardTransition, keyboardObject);
+      GREYAppStateTrackerObject *object =
+          TRACK_STATE_FOR_OBJECT(kGREYPendingKeyboardTransition, keyboardObject);
       objc_setAssociatedObject(keyboardObject,
                                @selector(grey_keyboardObject),
-                               elementID,
+                               object,
                                OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }];
     [defaultNotificationCenter addObserverForName:UIKeyboardDidHideNotification
                                            object:nil
                                             queue:nil
                                        usingBlock:^(NSNotification *note) {
-      NSString *elementID = objc_getAssociatedObject(keyboardObject,
-                                                     @selector(grey_keyboardObject));
-      UNTRACK_STATE_FOR_ELEMENT_WITH_ID(kGREYPendingKeyboardTransition, elementID);
+      GREYAppStateTrackerObject *object =
+          objc_getAssociatedObject(keyboardObject, @selector(grey_keyboardObject));
+      UNTRACK_STATE_FOR_OBJECT(kGREYPendingKeyboardTransition, object);
     }];
   }
 }

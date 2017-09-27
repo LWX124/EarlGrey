@@ -21,8 +21,9 @@
 
 #pragma mark - Example tests
 
-static NSString * const kGREYSampleExceptionName = @"GREYSampleException";
-static NSString * const kXCTestCaseInterruptionExceptionName = @"_XCTestCaseInterruptionException";
+static NSString *const kGREYSampleExceptionName = @"GREYSampleException";
+
+static NSString *gXCTestCaseInterruptionExceptionName;
 
 @interface GREYSampleTests : XCTestCase
 
@@ -32,6 +33,16 @@ static NSString * const kXCTestCaseInterruptionExceptionName = @"_XCTestCaseInte
 @end
 
 @implementation GREYSampleTests
+
++ (void)initialize {
+  if (self == [GREYSampleTests class]) {
+#if defined(__IPHONE_11_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_0
+    gXCTestCaseInterruptionExceptionName = @"NSInternalInconsistencyException";
+#else
+    gXCTestCaseInterruptionExceptionName = @"_XCTestCaseInterruptionException";
+#endif
+  }
+}
 
 - (void)setUp {
   [super setUp];
@@ -92,7 +103,7 @@ static NSString * const kXCTestCaseInterruptionExceptionName = @"_XCTestCaseInte
       [GREYSampleTests testCaseWithSelector:@selector(failUsingGREYAssert)];
   XCTAssertThrowsSpecificNamed([failingTest invokeTest],
                                NSException,
-                               kXCTestCaseInterruptionExceptionName);
+                               gXCTestCaseInterruptionExceptionName);
 
   NSAssert(failingTest.grey_status == kGREYXCTestCaseStatusFailed,
            @"Test should have failed from GREYAssert failure");
@@ -112,9 +123,12 @@ static NSString * const kXCTestCaseInterruptionExceptionName = @"_XCTestCaseInte
 - (void)testGreyStatusIsFailedAfterRecordFailureWithDescription {
   GREYSampleTests *failingTest =
       [GREYSampleTests testCaseWithSelector:@selector(failUsingRecordFailureWithDescription)];
-  [failingTest invokeTest];
+  XCTestRun *testRun = [XCTestRun testRunWithTest:failingTest];
+  NSAssert(testRun, @"Test Run cannot be nil.");
+  [[testRun test] performTest:testRun];
   NSAssert(failingTest.grey_status == kGREYXCTestCaseStatusFailed,
            @"Test should have failed from RecordFailureWithDescription");
+  XCTAssertTrue(YES);
 }
 
 
@@ -148,7 +162,7 @@ static NSString * const kXCTestCaseInterruptionExceptionName = @"_XCTestCaseInte
       [GREYSampleTests testCaseWithSelector:@selector(failUsingGREYAssert)];
   XCTAssertThrowsSpecificNamed([failingTest invokeTest],
                                NSException,
-                               kXCTestCaseInterruptionExceptionName);
+                               gXCTestCaseInterruptionExceptionName);
 
   [[NSNotificationCenter defaultCenter] removeObserver:self
                                                   name:kGREYXCTestCaseInstanceWillTearDown
@@ -182,8 +196,10 @@ static NSString * const kXCTestCaseInterruptionExceptionName = @"_XCTestCaseInte
 
   GREYSampleTests *failingTest =
       [GREYSampleTests testCaseWithSelector:@selector(failUsingRecordFailureWithDescription)];
-  [failingTest invokeTest];
 
+  XCTestRun *testRun = [XCTestRun testRunWithTest:failingTest];
+  NSAssert(testRun, @"Test Run cannot be nil.");
+  [[testRun test] performTest:testRun];
   [[NSNotificationCenter defaultCenter] removeObserver:self
                                                   name:kGREYXCTestCaseInstanceWillTearDown
                                                 object:nil];
@@ -259,7 +275,7 @@ static NSString * const kXCTestCaseInterruptionExceptionName = @"_XCTestCaseInte
 
 - (void)testFailedSetUpSendsNotifications {
   GREYSampleTests *failingSetUpTest =
-      [GREYSampleTests testCaseWithSelector:@selector(successfulTest)];
+  [GREYSampleTests testCaseWithSelector:@selector(successfulTest)];
   failingSetUpTest.failInSetUp = YES;
 
   __block BOOL willSetUpCalled = NO;
@@ -286,7 +302,7 @@ static NSString * const kXCTestCaseInterruptionExceptionName = @"_XCTestCaseInte
 
   XCTAssertThrowsSpecificNamed([failingSetUpTest invokeTest],
                                NSException,
-                               kXCTestCaseInterruptionExceptionName);
+                               gXCTestCaseInterruptionExceptionName);
   XCTAssertTrue(willSetUpCalled);
   XCTAssertFalse(didSetUpCalled);
 
@@ -330,7 +346,7 @@ static NSString * const kXCTestCaseInterruptionExceptionName = @"_XCTestCaseInte
 
 - (void)testFailedTearDownSendsNotifications {
   GREYSampleTests *failingTearDownTest =
-      [GREYSampleTests testCaseWithSelector:@selector(successfulTest)];
+  [GREYSampleTests testCaseWithSelector:@selector(successfulTest)];
   failingTearDownTest.failInTearDown = YES;
 
   __block BOOL willTearDownCalled = NO;
@@ -357,7 +373,7 @@ static NSString * const kXCTestCaseInterruptionExceptionName = @"_XCTestCaseInte
 
   XCTAssertThrowsSpecificNamed([failingTearDownTest invokeTest],
                                NSException,
-                               kXCTestCaseInterruptionExceptionName);
+                               gXCTestCaseInterruptionExceptionName);
   XCTAssertTrue(willTearDownCalled);
   XCTAssertFalse(didTearDownCalled);
 

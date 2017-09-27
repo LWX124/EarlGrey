@@ -1,5 +1,5 @@
 //
-// Copyright 2016 Google Inc.
+// Copyright 2017 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,11 @@
 // limitations under the License.
 //
 
-#ifdef __OBJC__
-@import EarlGrey;
-@import Foundation;
-@import UIKit;
-@import XCTest;
-#endif
+#import <Foundation/Foundation.h>
+
+/**
+ *  Additions to NSURLSession to enable EarlGrey to synchronize with NSURLSessionTasks that execute
+ *  network requests.
+ */
+@interface NSURLSession (GREYAdditions)
+@end

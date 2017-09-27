@@ -558,6 +558,7 @@
 					"-Wextra",
 					"-Wconstant-conversion",
 					"-Wconversion",
+					"-Wdocumentation",
 					"-Wenum-conversion",
 					"-Wint-conversion",
 					"-Wmissing-prototypes",
@@ -614,6 +615,7 @@
 					"-Wextra",
 					"-Wconstant-conversion",
 					"-Wconversion",
+					"-Wdocumentation",
 					"-Wenum-conversion",
 					"-Wint-conversion",
 					"-Wmissing-prototypes",
@@ -654,7 +656,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				GCC_PREFIX_HEADER = EarlGreyContribsTests/EarlGreyContribsTests.pch;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "EarlGreyContribs/EarlGreyContribs-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -673,7 +674,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
-				GCC_PREFIX_HEADER = EarlGreyContribsTests/EarlGreyContribsTests.pch;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "EarlGreyContribs/EarlGreyContribs-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

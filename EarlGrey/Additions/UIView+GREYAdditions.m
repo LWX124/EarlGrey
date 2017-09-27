@@ -24,6 +24,7 @@
 #import "Common/GREYSwizzler.h"
 #import "Provider/GREYElementProvider.h"
 #import "Synchronization/GREYAppStateTracker.h"
+#import "Synchronization/GREYAppStateTrackerObject.h"
 #import "Synchronization/GREYTimedIdlingResource.h"
 
 @implementation UIView (GREYAdditions)
@@ -212,6 +213,24 @@
   }
 }
 
+- (void)grey_recursivelyMakeOpaque {
+  objc_setAssociatedObject(self,
+                           @selector(grey_restoreOpacity),
+                           @(self.alpha),
+                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  self.alpha = 1.0;
+  [self.superview grey_recursivelyMakeOpaque];
+}
+
+- (void)grey_restoreOpacity {
+  NSNumber *alpha = objc_getAssociatedObject(self, @selector(grey_restoreOpacity));
+  if (alpha) {
+    self.alpha = [alpha floatValue];
+    objc_setAssociatedObject(self, @selector(grey_restoreOpacity), nil, OBJC_ASSOCIATION_ASSIGN);
+  }
+  [self.superview grey_restoreOpacity];
+}
+
 - (void)grey_saveCurrentAlphaAndUpdateWithValue:(float)alpha {
   objc_setAssociatedObject(self,
                            @selector(grey_restoreAlpha),
@@ -314,37 +333,37 @@
 }
 
 - (void)greyswizzled_setNeedsDisplayInRect:(CGRect)rect {
-  NSString *elementID = TRACK_STATE_FOR_ELEMENT(kGREYPendingDrawLayoutPass, self);
+  GREYAppStateTrackerObject *object = TRACK_STATE_FOR_OBJECT(kGREYPendingDrawLayoutPass, self);
   // Next runloop drain will perform the draw pass.
   dispatch_async(dispatch_get_main_queue(), ^ {
-    UNTRACK_STATE_FOR_ELEMENT_WITH_ID(kGREYPendingDrawLayoutPass, elementID);
+    UNTRACK_STATE_FOR_OBJECT(kGREYPendingDrawLayoutPass, object);
   });
   INVOKE_ORIGINAL_IMP1(void, @selector(greyswizzled_setNeedsDisplayInRect:), rect);
 }
 
 - (void)greyswizzled_setNeedsDisplay {
-  NSString *elementID = TRACK_STATE_FOR_ELEMENT(kGREYPendingDrawLayoutPass, self);
+  GREYAppStateTrackerObject *object = TRACK_STATE_FOR_OBJECT(kGREYPendingDrawLayoutPass, self);
   // Next runloop drain will perform the draw pass.
   dispatch_async(dispatch_get_main_queue(), ^ {
-    UNTRACK_STATE_FOR_ELEMENT_WITH_ID(kGREYPendingDrawLayoutPass, elementID);
+    UNTRACK_STATE_FOR_OBJECT(kGREYPendingDrawLayoutPass, object);
   });
   INVOKE_ORIGINAL_IMP(void, @selector(greyswizzled_setNeedsDisplay));
 }
 
 - (void)greyswizzled_setNeedsLayout {
-  NSString *elementID = TRACK_STATE_FOR_ELEMENT(kGREYPendingDrawLayoutPass, self);
+  GREYAppStateTrackerObject *object = TRACK_STATE_FOR_OBJECT(kGREYPendingDrawLayoutPass, self);
   // Next runloop drain will perform the draw pass.
   dispatch_async(dispatch_get_main_queue(), ^ {
-    UNTRACK_STATE_FOR_ELEMENT_WITH_ID(kGREYPendingDrawLayoutPass, elementID);
+    UNTRACK_STATE_FOR_OBJECT(kGREYPendingDrawLayoutPass, object);
   });
   INVOKE_ORIGINAL_IMP(void, @selector(greyswizzled_setNeedsLayout));
 }
 
 - (void)greyswizzled_setNeedsUpdateConstraints {
-  NSString *elementID = TRACK_STATE_FOR_ELEMENT(kGREYPendingDrawLayoutPass, self);
+  GREYAppStateTrackerObject *object = TRACK_STATE_FOR_OBJECT(kGREYPendingDrawLayoutPass, self);
   // Next runloop drain will perform the draw pass.
   dispatch_async(dispatch_get_main_queue(), ^ {
-    UNTRACK_STATE_FOR_ELEMENT_WITH_ID(kGREYPendingDrawLayoutPass, elementID);
+    UNTRACK_STATE_FOR_OBJECT(kGREYPendingDrawLayoutPass, object);
   });
   INVOKE_ORIGINAL_IMP(void, @selector(greyswizzled_setNeedsUpdateConstraints));
 }

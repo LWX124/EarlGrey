@@ -2,23 +2,113 @@
 
 Details changes in each release of EarlGrey. EarlGrey follows [semantic versioning](http://semver.org/).
 
+## [1.12.1](https://github.com/google/EarlGrey/tree/1.12.1) (09/01/2017)
+```
+Baseline: [405008e]
++ [405008e]: Release 1.12.1 to fix incorrect podspec release in 1.12.0.
+```
+
+### Bug Fixes
+* Correct podspec to point to the version 1.12.1
+
+## [1.12.0](https://github.com/google/EarlGrey/tree/1.12.0) (08/22/2017)
+```
+Baseline: [ae61a45]
++ [ae61a45]: Fix Main thread violation: UIView setHidden called from non-main thread.
+```
+
+### Enhancements
+* More robust synchronization with `NSURLSession`. This fixes many flakiness seen with EarlGrey not waiting for the completion of callback methods after network response has been received.
+* Performance improvements in GREYAppStateTracker. It uses a deallocation tracker in place of NSString to free up memory sooner.
+* Fallback to `EarlGrey.swift` v3 when gem cannot find the correct file for the current swift version.
+* Added `-Wdocumentation` for all EarlGrey projects.
+* Use static constructor in place of initialize method for one-time setup.
+* Remove extra parentheses added around failed assertion expressions.
+* Updated error messages on failure of layout contraints.
+* Improved Visibility checker's shifted pixel image redraw logic.
+
+### Bug Fixes
+* Fixed floating point issue in layout constraint matchers. [Issue #594](https://github.com/google/EarlGrey/issues/594)
+* Fixed an issue where an exception is thrown when `-[UIWebDocumentView text]` is called in the middle of loading.
+* Fixed a bug in `isKeyboardShown` with zero sized input accessory views.
+* Fixed `CGAffineTransformInvert: singular matrix` message that appears during Pinch tests.
+
+### Compatibility
+* EarlGrey now supports Xcode version 9.0 up to 9.0 beta 6. All EarlGrey project tests pass with these versions.
+
+## [1.11.0](https://github.com/google/EarlGrey/tree/1.11.0) (07/21/2017)
+
+```
+Baseline: [0d1086d]
++ [0d1086d]: Modify 1.10.2 -> 1.11.0 and update the CHANGELOG
+```
+
+### Enhancements
+* Added support for iOS 11 & Xcode 9.0.
+* Added the `grey_textFieldValue()` matcher for updates to UITextFields with iOS11.
+
+### Bug Fixes
+* Fixed Minor issue that was causing infinitely long touch paths for zero sized areas.
+* Grammatical and Language Fixes.
+* Refactored FunctionalTests tests for adding iOS 11 support.
+
+## [1.10.1](https://github.com/google/EarlGrey/tree/1.10.1) (07/14/2017)
+
+```
+Baseline: [2abda72]
++ [2abda72]: Modified GREYElementInteraction.m to drain the thread for a timeout.
+```
+
+### Enhancements
+* Improved `GREYAssert` macros to not wait until idle as it can cause it to never return.
+* Improved Search action to not wait until idle as it can cause it to never return.
+
+## [1.10.0](https://github.com/google/EarlGrey/tree/1.10.0) (07/05/2017)
+
+```
+Baseline: [a386cb2]
++ [a386cb2]: Update Changelog for the 1.10.0 release for the Screenshot Docs change.
+```
+
+### Bug Fixes
+* Resolved visibility checker overlapping view issue. [Issue #532](https://github.com/google/EarlGrey/issues/532)
+* Use accessibility ID in place of accessibility label for keyboard modifier keys. [Issue #539](https://github.com/google/EarlGrey/issues/539)
+
+### Enhancements
+* Removed `kGREYConfigKeyScreenshotDirLocation` in favor of `kGREYConfigKeyArtifactsDirLocation`.
+* Fixed all issues reported by Xcode's static analysis.
+* Fixed long press test failures on travis.
+* Improved interaction error logging by adding more information about failure to the out error parameter.
+* Added more error details to timeout failures.
+* Add explicit 1st and 2nd param to grey_allOf and grey_anyOf to prevent redundant uses.
+* Update jazzy copyright year.
+
+### Compatibility
+* Adding xcode version to backwards compatibility doc.
+
 ## [1.9.4](https://github.com/google/EarlGrey/tree/1.9.4) (06/09/2017)
 
 ```
-Baseline: [ed9c6d3]
-+ [ed9c6d3]: Add RVM before-install step in before install for travis runs.
+Baseline: [76a6d65]
++ [76a6d65]: Updated Hierarchy traversal to use common traversal logic with DFS/BF.
 ```
 
 ### Bug Fixes
 * Fixed a bug in scroll action that can sometimes cause a tap at the end of scroll.
 
+### New Features
+* Added `kGREYConfigKeyArtifactsDirLocation` configuration key for setting a custom folder to store artifacts.
+
 ### Enhancements
 * Improved CI execution on travis.
 * Updated test app with better AutoLayout support.
-* Improved docs for earlgrey gem, contributors guide etc.
+* Improved docs for earlgrey gem, contributors guide, etc.
 * Fixed all asserts to use internal implementation instead of NSAssert which
   can be disabled.
 * Updated cheatsheet render script to use Chrome 59.
+* Consolidated DFS and BFS hierarchy traversals.
+* Renamed `GREYExposed.h` to `GREYAppleInternals.h`
+* Removed redundant categories and moved methods to private headers.
 
 ### Contributors
 * [bootstraponline](https://github.com/bootstraponline)
@@ -26,8 +116,8 @@ Baseline: [ed9c6d3]
 ## [1.9.3](https://github.com/google/EarlGrey/tree/1.9.3) (05/26/2017)
 
 ```
-Baseline: [a915cd1]
-+ [a915cd1]: Fix breaking test with Long Press
+Baseline: [a3ba675]
++ [a3ba675]: Fix breaking test with Long Press
 ```
 
 ### Improvements

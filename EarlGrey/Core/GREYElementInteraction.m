@@ -99,6 +99,9 @@
   GREYElementFinder *elementFinder = [[GREYElementFinder alloc] initWithMatcher:elementMatcher];
   NSError *searchActionError = nil;
   CFTimeInterval timeoutTime = CACurrentMediaTime() + timeout;
+  // We want the search action to be performed at least once.
+  static unsigned short kMinimumIterationAttempts = 1;
+  unsigned short numIterations = 0;
   BOOL timedOut = NO;
   while (YES) {
     @autoreleasepool {
@@ -113,30 +116,46 @@
       if (elements.count > 0) {
         return elements;
       } else if (!_searchAction) {
-        NSString *desc =
+        NSString *description =
             @"Interaction cannot continue because the desired element was not found.";
         GREYPopulateErrorOrLog(error,
                                kGREYInteractionErrorDomain,
                                kGREYInteractionElementNotFoundErrorCode,
-                               desc);
+                               description);
         return nil;
       } else if (searchActionError) {
         break;
       }
 
-      CFTimeInterval currentTime = CACurrentMediaTime();
-      if (currentTime >= timeoutTime) {
-        timedOut = YES;
+      // After a lookup, we should check if we have timed out. This is so that we can quit
+      // appropriately after a timeout.
+      timedOut = (timeoutTime - CACurrentMediaTime()) < 0;
+      if (timedOut && numIterations >= kMinimumIterationAttempts) {
         break;
       }
-      // Keep applying search action.
+
+      // Try to uncover the element by applying the search action.
       id<GREYInteraction> interaction =
           [[GREYElementInteraction alloc] initWithElementMatcher:_searchActionElementMatcher];
       // Don't fail if this interaction error's out. It might still have revealed the element
       // we're looking for.
       [interaction performAction:_searchAction error:&searchActionError];
+
+      // After a search action, if we have timed out, then we drain the thread by passing 0.
+      // Otherwise, passing negative will throw an exception.
+      CFTimeInterval timeRemaining = timeoutTime - CACurrentMediaTime();
+      if (timeRemaining < 0) {
+        timeRemaining = 0;
+      }
       // Drain here so that search at the beginning of the loop looks at stable UI.
-      [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+      BOOL successful =
+          [[GREYUIThreadExecutor sharedInstance] drainUntilIdleWithTimeout:timeRemaining];
+      // If not @c successful, then quit.
+      if (!successful) {
+        timedOut = YES;
+        break;
+      }
+      ++numIterations;
     }
   }
 
@@ -149,12 +168,13 @@
   } else if (timedOut) {
     CFTimeInterval interactionTimeout =
         GREY_CONFIG_DOUBLE(kGREYConfigKeyInteractionTimeoutDuration);
-    NSString *desc = [NSString stringWithFormat:@"Interaction timed out after %g seconds while "
-                                                @"searching for element.", interactionTimeout];
+    NSString *description = [NSString stringWithFormat:@"Interaction timed out after %g seconds "
+                                                       @"while searching for element.",
+                                                       interactionTimeout];
 
     NSError *timeoutError = GREYErrorMake(kGREYInteractionErrorDomain,
                                           kGREYInteractionTimeoutErrorCode,
-                                          desc);
+                                          description);
 
     GREYPopulateNestedErrorOrLog(error,
                                  kGREYInteractionErrorDomain,
@@ -625,7 +645,9 @@
           errorDetails[kErrorDetailActionNameKey] = action.name;
           errorDetails[kErrorDetailElementMatcherKey] = _elementMatcher.description;
           errorDetails[kErrorDetailRecoverySuggestionKey] =
-              @"Create a more specific matcher to narrow matched element";
+              @"Create a more specific matcher to uniquely match an element. If that's not "
+              @"possible then use atIndex: to select from one of the matched elements but the "
+              @"order of elements may change.";
 
           NSArray *keyOrder = @[ kErrorDetailActionNameKey,
                                  kErrorDetailElementMatcherKey,
@@ -635,8 +657,8 @@
                                                                hideEmpty:YES
                                                                 keyOrder:keyOrder];
           NSString *reason = [NSString stringWithFormat:@"Multiple UI elements matched "
-                                                        @"for given criteria.\n"
-                                                        @"Exception with Assertion: %@\n",
+                                                        @"for the given criteria.\n"
+                                                        @"Exception with Action: %@\n",
                                                         reasonDetail];
 
           if ([actionError isKindOfClass:[GREYError class]]) {
