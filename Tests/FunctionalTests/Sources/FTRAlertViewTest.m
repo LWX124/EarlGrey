@@ -16,6 +16,8 @@
 
 #import "FTRBaseIntegrationTest.h"
 
+#import <EarlGrey/EarlGrey.h>
+
 @interface FTRAlertViewTest : FTRBaseIntegrationTest
 @end
 
@@ -71,6 +73,8 @@
   [[EarlGrey selectElementWithMatcher:grey_text(@"test_pwd")] assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:grey_text(@"Leave")]
+      performAction:[GREYActions actionForTap]];
+  [[EarlGrey selectElementWithMatcher:grey_text(@"Roger")]
       performAction:[GREYActions actionForTap]];
 }
 

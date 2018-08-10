@@ -14,15 +14,14 @@
 // limitations under the License.
 //
 
-#import <EarlGrey/GREYElementHierarchy.h>
-#import <EarlGrey/NSObject+GREYAdditions.h>
-
 #import <OCMock/OCMock.h>
 
+#import "Additions/NSObject+GREYAdditions.h"
+#import <EarlGrey/GREYElementHierarchy.h>
 #import "GREYBaseTest.h"
 #import "GREYExposedForTesting.h"
-#import "GREYUTCustomAccessibilityView.h"
 #import "GREYUTAccessibilityViewContainerView.h"
+#import "GREYUTCustomAccessibilityView.h"
 
 @interface GREYElementHierarchyTest : GREYBaseTest
 
@@ -185,10 +184,6 @@
                                 outputString:[[NSMutableString alloc] init]
                      andAnnotationDictionary:nil];
   XCTAssertNotNil(test);
-}
-
-- (void)testHierarchyStringForANilView {
-  XCTAssertThrows([GREYElementHierarchy hierarchyStringForElement:nil]);
 }
 
 - (void)testHierarchyStringForSingleAccessibilityElement {

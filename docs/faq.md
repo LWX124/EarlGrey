@@ -348,7 +348,7 @@ will then fail because the element doesn't meet tap's interactable constraint.
 
 ```swift
 // Swift
-EarlGrey.select(elementWithMatcher:matcher)
+EarlGrey.selectElement(with:matcher)
         .using(searchAction: grey_scrollInDirection(GREYDirection.down, 200),
                onElementWithMatcher: grey_kindOfClass(UITableView.self))
         .assert(grey_notNil())
@@ -375,7 +375,7 @@ let populated = GREYCondition(name: "Wait for UICollectionView to populate", blo
     var error: NSError?
 
     // Checking if collection view exists in the UI hierarchy.
-    EarlGrey.select(elementWithMatcher:collectionViewMatcher)
+    EarlGrey.selectElement(with:collectionViewMatcher)
             .assert(grey_notNil(), error: &error)
 
     return error == nil
@@ -544,7 +544,7 @@ function testLabel(description) {
 
 ```swift
 // Swift
-EarlGrey.select(elementWithMatcher: grey_accessibilityLabel("automation_button_label")).assert(grey_sufficientlyVisible());
-EarlGrey.select(elementWithMatcher: grey_accessibilityLabel("automation_image_label")).assert(grey_sufficientlyVisible());
-EarlGrey.select(elementWithMatcher: grey_accessibilityID("automation_image_id")).assert(grey_sufficientlyVisible());
+EarlGrey.selectElement(with: grey_accessibilityLabel("automation_button_label")).assert(grey_sufficientlyVisible());
+EarlGrey.selectElement(with: grey_accessibilityLabel("automation_image_label")).assert(grey_sufficientlyVisible());
+EarlGrey.selectElement(with: grey_accessibilityID("automation_image_id")).assert(grey_sufficientlyVisible());
 ```

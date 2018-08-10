@@ -15,7 +15,6 @@
 //
 
 #import <EarlGrey/GREYScreenshotUtil.h>
-
 #import "GREYBaseTest.h"
 
 @interface GREYScreenshotUtilTest : GREYBaseTest
@@ -78,9 +77,6 @@
   element = [[UIView alloc] initWithFrame:CGRectMake(2, 2, 5, 0)];
   image = [GREYScreenshotUtil snapshotElement:element];
   XCTAssertNil(image);
-
-  image = [GREYScreenshotUtil snapshotElement:nil];
-  XCTAssertNil(image);
 }
 
 - (void)testSnapshotInvalidAccessibilityElement {
@@ -93,9 +89,6 @@
 
   element.accessibilityFrame = CGRectMake(2, 2, 5, 0);
   image = [GREYScreenshotUtil snapshotElement:element];
-  XCTAssertNil(image);
-
-  image = [GREYScreenshotUtil snapshotElement:nil];
   XCTAssertNil(image);
 }
 

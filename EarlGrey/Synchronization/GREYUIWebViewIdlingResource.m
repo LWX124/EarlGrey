@@ -20,8 +20,8 @@
 #import "Assertion/GREYAssertionDefines.h"
 #import "Common/GREYDefines.h"
 #import "Common/GREYThrowDefines.h"
-#import "Synchronization/GREYUIThreadExecutor.h"
 #import "Synchronization/GREYUIThreadExecutor+Internal.h"
+#import "Synchronization/GREYUIThreadExecutor.h"
 
 /**
  *  The maximum number of render passes to wait for before the UIWebView can be considered idle.
@@ -137,7 +137,17 @@ static NSString *const kTrackerScriptCleanupScript =
     }
   }
 
-  id internalWebBrowserView = [[_webView valueForKey:@"_internal"] valueForKey:@"browserView"];
+  id webViewInternal = [_webView valueForKey:@"_internal"];
+
+  // UIWebViews may be used to display PDFs in addition to HTML based content. Test if there's a PDF
+  // view populated in UIWebView's hierarchy.
+  BOOL webViewIsDisplayingPDF =
+      ([[webViewInternal valueForKey:@"pdfHandler"] valueForKey:@"pdfView"] != nil);
+  if (webViewIsDisplayingPDF) {
+    return YES;
+  }
+
+  id internalWebBrowserView = [webViewInternal valueForKey:@"browserView"];
   if (internalWebBrowserView) {
     @autoreleasepool {
       // There is a slight delay between a UIWebView delegate receiving webViewDidFinishLoad and

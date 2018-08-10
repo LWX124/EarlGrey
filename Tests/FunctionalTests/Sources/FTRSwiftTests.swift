@@ -97,24 +97,24 @@ class FTRSwiftTests: XCTestCase {
     let matcher = grey_accessibilityID("TypingTextField")
     let action = grey_typeText("Sample Swift Test")
     let assertionMatcher = grey_text("Sample Swift Test")
-    EarlGrey.select(elementWithMatcher: matcher)
+    EarlGrey.selectElement(with: matcher)
       .perform(action)
       .assert(assertionMatcher)
   }
 
   func testTypingWithError() {
     self.openTestView("Typing Views")
-    EarlGrey.select(elementWithMatcher: grey_accessibilityID("TypingTextField"))
+    EarlGrey.selectElement(with: grey_accessibilityID("TypingTextField"))
       .perform(grey_typeText("Sample Swift Test"))
       .assert(grey_text("Sample Swift Test"))
 
     var error: NSError?
-    EarlGrey.select(elementWithMatcher: grey_accessibilityID("TypingTextField"))
+    EarlGrey.selectElement(with: grey_accessibilityID("TypingTextField"))
       .perform(grey_typeText(""), error: &error)
       .assert(grey_text("Sample Swift Test"), error: nil)
     GREYAssert(error != nil, reason: "Performance should have errored")
     error = nil
-    EarlGrey.select(elementWithMatcher: grey_accessibilityID("TypingTextField"))
+    EarlGrey.selectElement(with: grey_accessibilityID("TypingTextField"))
       .perform(grey_clearText())
       .perform(grey_typeText("Sample Swift Test"), error: nil)
       .assert(grey_text("Garbage Value"), error: &error)
@@ -124,7 +124,7 @@ class FTRSwiftTests: XCTestCase {
   func testFastTyping() {
     self.openTestView("Typing Views")
     let textFieldEventsRecorder = TextFieldEventsRecorder()
-    EarlGrey.select(elementWithMatcher: grey_accessibilityID("TypingTextField"))
+    EarlGrey.selectElement(with: grey_accessibilityID("TypingTextField"))
       .perform(textFieldEventsRecorder.registerActionBlock())
       .perform(grey_replaceText("Sample Swift Test"))
       .assert(grey_text("Sample Swift Test"))
@@ -133,16 +133,16 @@ class FTRSwiftTests: XCTestCase {
 
   func testTypingWithDeletion() {
     self.openTestView("Typing Views")
-    EarlGrey.select(elementWithMatcher: grey_accessibilityID("TypingTextField"))
+    EarlGrey.selectElement(with: grey_accessibilityID("TypingTextField"))
       .perform(grey_typeText("Fooo\u{8}B\u{8}Bar"))
       .assert(grey_text("FooBar"))
   }
 
   func testButtonPressWithGREYAllOf() {
     self.openTestView("Basic Views")
-    EarlGrey.select(elementWithMatcher: grey_text("Tab 2")).perform(grey_tap())
+    EarlGrey.selectElement(with: grey_text("Tab 2")).perform(grey_tap())
     let matcher = grey_allOf([grey_text("Long Press"), grey_sufficientlyVisible()])
-    EarlGrey.select(elementWithMatcher: matcher).perform(grey_longPressWithDuration(1.1))
+    EarlGrey.selectElement(with: matcher).perform(grey_longPressWithDuration(1.1))
       .assert(grey_notVisible())
   }
 
@@ -151,8 +151,8 @@ class FTRSwiftTests: XCTestCase {
     let matcher = grey_anyOf([grey_text("FooText"),
                               grey_text("Simple Alert"),
                               grey_buttonTitle("BarTitle")])
-    EarlGrey.select(elementWithMatcher: matcher).perform(grey_tap())
-    EarlGrey.select(elementWithMatcher: grey_text("Flee"))
+    EarlGrey.selectElement(with: matcher).perform(grey_tap())
+    EarlGrey.selectElement(with: grey_text("Flee"))
       .assert(grey_sufficientlyVisible())
       .perform(grey_tap())
   }
@@ -160,7 +160,7 @@ class FTRSwiftTests: XCTestCase {
   func testSwiftCustomMatcher() {
     // Verify description in custom matcher isn't nil.
     // unexpectedly found nil while unwrapping an Optional value
-    EarlGrey.select(elementWithMatcher: grey_allOf([grey_firstElement(),
+    EarlGrey.selectElement(with: grey_allOf([grey_firstElement(),
                                                     grey_text("FooText")]))
       .assert(grey_nil())
   }
@@ -174,11 +174,11 @@ class FTRSwiftTests: XCTestCase {
       })
 
     self.openTestView("Basic Views")
-    EarlGrey.select(elementWithMatcher: grey_text("Tab 2")).perform(grey_tap())
-    EarlGrey.select(elementWithMatcher: grey_accessibilityLabel("tab2Container"))
+    EarlGrey.selectElement(with: grey_text("Tab 2")).perform(grey_tap())
+    EarlGrey.selectElement(with: grey_accessibilityLabel("tab2Container"))
       .perform(checkHiddenBlock).assert(grey_sufficientlyVisible())
     var error: NSError?
-    EarlGrey.select(elementWithMatcher: grey_text("Non Existent Element"))
+    EarlGrey.selectElement(with: grey_text("Non Existent Element"))
       .perform(grey_tap(), error:&error)
     if let errorVal = error {
       GREYAssertEqual(errorVal.domain as AnyObject?, kGREYInteractionErrorDomain as AnyObject?,
@@ -193,10 +193,10 @@ class FTRSwiftTests: XCTestCase {
     dateFormatter.dateStyle = .medium
     let date = Date(timeIntervalSinceReferenceDate: 118800)
     dateFormatter.locale = Locale(identifier: "en_US")
-    EarlGrey.select(elementWithMatcher: grey_text("Date")).perform(grey_tap())
-    EarlGrey.select(elementWithMatcher: grey_accessibilityID("DatePickerId"))
+    EarlGrey.selectElement(with: grey_text("Date")).perform(grey_tap())
+    EarlGrey.selectElement(with: grey_accessibilityID("DatePickerId"))
       .perform(grey_setDate(date))
-    EarlGrey.select(elementWithMatcher: grey_accessibilityID("DatePickerId"))
+    EarlGrey.selectElement(with: grey_accessibilityID("DatePickerId"))
       .assert(grey_datePickerValue(date))
   }
 
@@ -206,24 +206,24 @@ class FTRSwiftTests: XCTestCase {
     // Without the parameter using the value of the wait action, a warning should be seen.
     _ = GREYCondition.init(name: "conditionWithAction", block: {
       stepperValue += 1
-      EarlGrey.select(elementWithMatcher: grey_kindOfClass(UIStepper.self))
+      EarlGrey.selectElement(with: grey_kindOfClass(UIStepper.self))
         .perform(grey_setStepperValue(stepperValue))
       return stepperValue == 55
     }).waitWithTimeout(seconds: 10.0)
-    EarlGrey.select(elementWithMatcher: grey_kindOfClass(UIStepper.self))
-      .assert(with: grey_stepperValue(55))
+    EarlGrey.selectElement(with: grey_kindOfClass(UIStepper.self))
+      .assert(grey_stepperValue(55))
   }
 
   func openTestView(_ name: String) {
     var errorOrNil : NSError?
-    EarlGrey.select(elementWithMatcher: grey_accessibilityLabel(name))
+    EarlGrey.selectElement(with: grey_accessibilityLabel(name))
       .perform(grey_tap(), error: &errorOrNil)
     if ((errorOrNil == nil)) {
       return
     }
-    EarlGrey.select(elementWithMatcher: grey_kindOfClass(UITableView.self))
+    EarlGrey.selectElement(with: grey_kindOfClass(UITableView.self))
       .perform(grey_scrollToContentEdge(GREYContentEdge.top))
-    EarlGrey.select(elementWithMatcher: grey_allOf([grey_accessibilityLabel(name),
+    EarlGrey.selectElement(with: grey_allOf([grey_accessibilityLabel(name),
                                                     grey_interactable()]))
       .using(searchAction: grey_scrollInDirection(GREYDirection.down, 200),
              onElementWithMatcher: grey_kindOfClass(UITableView.self))

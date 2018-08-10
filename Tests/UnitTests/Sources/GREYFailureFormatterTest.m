@@ -15,10 +15,10 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <EarlGrey/GREYError.h>
-#import <EarlGrey/GREYFailureFormatter.h>
-#import <EarlGrey/XCTestCase+GREYAdditions.h>
 
+#import "Additions/XCTestCase+GREYAdditions.h"
+#import "Common/GREYError.h"
+#import "Common/GREYFailureFormatter.h"
 #import "GREYBaseTest.h"
 
 @interface GREYFailureFormatterTest : GREYBaseTest
@@ -42,7 +42,7 @@
                                                           lineNumber:mockLineNumber
                                                         functionName:functionName
                                                           stackTrace:mockStackTrace
-                                                      appScreenshots:nil
+                                                      appScreenshots:@{}
                                                               format:@"%@", failureString];
   XCTAssertNotNil(failure, @"Error format failure.");
   NSArray *failureLines = [failure componentsSeparatedByString:@"\n"];

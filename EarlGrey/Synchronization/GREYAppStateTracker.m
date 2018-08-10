@@ -47,7 +47,7 @@ static pthread_mutex_t gStateLock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
  */
 static const unsigned short kNumGREYAppStates = 12;
 
-@interface GREYAppStateTracker () <GREYObjectDeallocationTrackerDelegate>
+@interface GREYAppStateTracker() <GREYObjectDeallocationTrackerDelegate>
 
 @end
 
@@ -251,7 +251,7 @@ orInternalObjectDeallocationTracker:nil
   return [eventStateString componentsJoinedByString:@"\n"];
 }
 
-- (id)grey_performBlockInCriticalSection:(id (^)())block {
+- (id)grey_performBlockInCriticalSection:(id (^)(void))block {
   int lock = pthread_mutex_lock(&gStateLock);
   GREYFatalAssertWithMessage(lock == 0, @"Failed to lock.");
   id retVal = block();

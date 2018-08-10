@@ -13,7 +13,7 @@ the first element.
 /**
  *  Example Usage:
  *
- *  EarlGrey.select(elementWithMatcher:grey_allOfMatchers([
+ *  EarlGrey.selectElement(with:grey_allOfMatchers([
  *    grey_accessibilityID("some_id"),
  *    grey_interactable(),
  *    grey_firstElement()])).assert(grey_notNil())

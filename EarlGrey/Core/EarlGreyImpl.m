@@ -14,16 +14,18 @@
 // limitations under the License.
 //
 
-#import "EarlGrey.h"
+#import "Core/EarlGreyImpl.h"
 
 #import "Common/GREYAnalytics.h"
 #import "Common/GREYAppleInternals.h"
-#import "Common/GREYErrorConstants.h"
 #import "Common/GREYError.h"
+#import "Common/GREYErrorConstants.h"
 #import "Common/GREYFatalAsserts.h"
 #import "Core/GREYKeyboard.h"
 #import "Event/GREYSyntheticEvents.h"
 #import "Exception/GREYDefaultFailureHandler.h"
+#import "Synchronization/GREYUIThreadExecutor.h"
+#import "EarlGrey.h"
 
 NSString *const kGREYFailureHandlerKey = @"GREYFailureHandlerKey";
 NSString *const kGREYKeyboardDismissalErrorDomain = @"com.google.earlgrey.KeyboardDismissalDomain";
@@ -88,6 +90,10 @@ NSString *const kGREYKeyboardDismissalErrorDomain = @"com.google.earlgrey.Keyboa
 - (BOOL)rotateDeviceToOrientation:(UIDeviceOrientation)deviceOrientation
                        errorOrNil:(__strong NSError **)errorOrNil {
   return [GREYSyntheticEvents rotateDeviceToOrientation:deviceOrientation errorOrNil:errorOrNil];
+}
+
+- (BOOL)shakeDeviceWithError:(__strong NSError **)errorOrNil {
+  return [GREYSyntheticEvents shakeDeviceWithError:errorOrNil];
 }
 
 - (BOOL)dismissKeyboardWithError:(__strong NSError **)errorOrNil {
